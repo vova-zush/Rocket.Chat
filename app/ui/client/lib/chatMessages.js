@@ -248,7 +248,7 @@ export class ChatMessages {
 	}
 
 	async send(event, { rid, tmid, value }, done = () => {}) {
-		const threadsEnabled = false;
+		const threadsEnabled = settings.get('Threads_enabled');
 
 		MsgTyping.stop(rid);
 
