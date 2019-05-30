@@ -101,12 +101,57 @@ Meteor.startup(function() {
 
 			this.add('Jitsi_Open_New_Window', false, {
 				type: 'boolean',
-				enableQuery: {
-					_id: 'Jitsi_Enabled',
-					value: true,
-				},
+				enableQuery: [
+					{
+						_id: 'Jitsi_Enabled',
+						value: true,
+					}, {
+						_id: 'Jitsi_Open_In_Popup',
+						value: false,
+					}, {
+						_id: 'Jitsi_Open_In_Site_Mode',
+						value: false,
+					},
+				],
 				i18nLabel: 'Always_open_in_new_window',
 				public: true,
+			});
+
+			this.add('Jitsi_Open_In_Popup', false, {
+				type: 'boolean',
+				enableQuery: [
+					{
+						_id: 'Jitsi_Enabled',
+						value: true,
+					}, {
+						_id: 'Jitsi_Open_New_Window',
+						value: false,
+					}, {
+						_id: 'Jitsi_Open_In_Site_Mode',
+						value: false,
+					},
+				],
+				i18nLabel: 'Always_open_in_popup',
+				public: true,
+			});
+
+			this.add('Jitsi_Open_In_Site_Mode', false, {
+				type: 'boolean',
+				enableQuery: [
+					{
+						_id: 'Jitsi_Enabled',
+						value: true,
+					}, {
+						_id: 'Jitsi_Open_New_Window',
+						value: false,
+					}, {
+						_id: 'Jitsi_Open_In_Popup',
+						value: false,
+					},
+				],
+				i18nLabel: 'Always_open_in_site_mode',
+				public: true,
+				alert: 'Only if chat in iframe (need additional scripts in parent)',
 			});
 
 			this.add('Jitsi_Enable_Channels', false, {

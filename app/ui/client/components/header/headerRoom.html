@@ -71,5 +71,13 @@
 				{{> Template.contentBlock}}
 			{{/if}}
 		</div>
+		{{#if getCompanyName}}
+		<div class="rc-header__wrap">
+			<div class="rc-header__content rc-header__block">
+				<div style="border: 1px solid #1bd251; color: #1bd251; margin: 0 3px;
+					padding: 1px 4px; border-radius: 2px; display: inline-block ">{{getCompanyName}}</div>
+			</div>
+		</div>
+		{{/if}}
 	</header>
 </template>

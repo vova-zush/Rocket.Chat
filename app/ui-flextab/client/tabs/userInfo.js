@@ -9,7 +9,7 @@ import moment from 'moment';
 import { DateFormat } from '../../../lib';
 import { popover } from '../../../ui-utils';
 import { templateVarHandler } from '../../../utils';
-import { RoomRoles, UserRoles, Roles } from '../../../models';
+import { RoomRoles, UserRoles, Roles, Users } from '../../../models';
 import { settings } from '../../../settings';
 import FullUser from '../../../models/client/models/FullUser';
 import { getActions } from './userActions';
@@ -185,6 +185,15 @@ Template.userInfo.helpers({
 	shouldDisplayReason() {
 		const user = Template.instance().user.get();
 		return settings.get('Accounts_ManuallyApproveNewUsers') && user.active === false && user.reason;
+	},
+	getCompanyName() {
+		const user = Users.findOne({
+			_id: Template.instance().user.get()._id,
+			company: {
+				$exists: 1,
+			},
+		});
+		return user && user.company && user.company.name ? user.company.name : false;
 	},
 });
 

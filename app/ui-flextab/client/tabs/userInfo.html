@@ -30,6 +30,15 @@
 								{{> avatar username=username}}
 							</div>
 							<h3 title="{{name}}" class="rc-user-info__name"><i class="status-{{status}}"></i> {{name}}</h3>
+							{{#if getCompanyName}}
+								<h6 title="{{getCompanyName}}" style="
+								border: 1px solid #1bd251;
+								color:#1bd251;
+								margin:0 3px;
+								padding: 1px 4px;
+								border-radius: 2px;
+								display: inline-block;"> {{getCompanyName}}</h6>
+							{{/if}}
 							{{#if username}}<p class="rc-user-info__username">@{{username}}</p>{{/if}}
 							<span class="rc-header__status rc-user-info__status">
 								<div class="rc-header__status-bullet rc-header__status-bullet--{{userStatus}}" title="{{_ userStatus}}"></div>

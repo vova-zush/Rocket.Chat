@@ -80,3 +80,4 @@ import './publications/userData';
 import './routes/avatar';
 import './stream/messages';
 import './stream/streamBroadcast';
+import './publications/userCompany';

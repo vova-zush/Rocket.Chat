@@ -7,7 +7,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { t, roomTypes, handleError } from '../../../../utils';
 import { TabBar, fireGlobalEvent, call } from '../../../../ui-utils';
-import { ChatSubscription, Rooms, ChatRoom } from '../../../../models';
+import { ChatSubscription, Rooms, ChatRoom, Users } from '../../../../models';
 import { settings } from '../../../../settings';
 import { emoji } from '../../../../emoji';
 import { Markdown } from '../../../../markdown/client';
@@ -128,6 +128,19 @@ Template.headerRoom.helpers({
 
 	isSection() {
 		return Template.instance().data.sectionName != null;
+	},
+	getCompanyName() {
+		const roomData = Session.get(`roomData${ this._id }`);
+		if (!roomData || roomData.t !== 'd') { return ''; }
+
+		const name = roomTypes.getSecondaryRoomName(roomData.t, roomData);
+		const user = Users.findOne({
+			username: name,
+			company: {
+				$exists: 1,
+			},
+		});
+		return user && user.company && user.company.name ? user.company.name : false;
 	},
 });
 

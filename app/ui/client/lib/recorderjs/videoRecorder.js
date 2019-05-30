@@ -41,7 +41,15 @@ export const VideoRecorder = new class VideoRecorder {
 		if (this.stream == null) {
 			return;
 		}
-		this.mediaRecorder = new MediaRecorder(this.stream, { type: 'video/webm' });
+		let options;
+		if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
+			options = { mimeType: 'video/webm;codecs=vp9' };
+		} else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) {
+			options = { mimeType: 'video/webm;codecs=vp8' };
+		} else {
+			options = { type: 'video/webm' };
+		}
+		this.mediaRecorder = new MediaRecorder(this.stream, options);
 		this.mediaRecorder.ondataavailable = (blobev) => {
 			this.chunks.push(blobev.data);
 			if (!this.recordingAvailable.get()) {
@@ -62,6 +70,7 @@ export const VideoRecorder = new class VideoRecorder {
 			this.videoel.src = URL.createObjectURL(stream);
 		}
 
+		this.videoel.muted = true;
 		this.videoel.onloadedmetadata = () => {
 			this.videoel && this.videoel.play();
 		};

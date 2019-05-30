@@ -33,6 +33,9 @@
 					{{#if isBot}}
 						<span class="is-bot color-secondary-color border-component-color">{{_ "Bot"}}</span>
 					{{/if}}
+					{{#if getCompanyName}}
+						<span class="is-bot color-secondary-color border-component-color" style="border-color: #1bd251; color: #1bd251">{{getCompanyName}}</span>
+					{{/if}}
 					<time class="time" title='{{date}} {{time}}' datetime='{{date}} {{time}}'>{{time}}</time>
 					{{#if showTranslated}}
 						<span class="translated">

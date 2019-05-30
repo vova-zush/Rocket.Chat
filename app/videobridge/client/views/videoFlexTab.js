@@ -3,7 +3,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 
 import { settings } from '../../../settings';
-import { modal, TabBar } from '../../../ui-utils';
+import { modal, TabBar, fireGlobalEvent } from '../../../ui-utils';
 import { t } from '../../../utils';
 import { Users, Rooms } from '../../../models';
 import * as CONSTANTS from '../../constants';
@@ -73,6 +73,28 @@ Template.videoFlexTab.onRendered(function() {
 		TabBar.updateButton('video', { class: 'red' });
 	};
 
+	const openVideoPopUp = (url, windowTitle) => {
+		windowTitle = windowTitle || 'VideoChat';
+
+		const windowParams = {
+			width: 600,
+			height: 700,
+			left: screen.width / 2 - 300,
+			top: screen.height / 2 - 350,
+			status: 0,
+			toolbar: 0,
+			menubar: 0,
+			location: 0,
+		};
+
+		const newWindow = window.open(url, windowTitle, Object.keys(windowParams).map((key) => `${ key }=${ windowParams[key] }`).join(','));
+		if (!newWindow) {
+			alert('Please, enable popup windows for this example');
+		}
+
+		return newWindow;
+	};
+
 	modal.open({
 		title: t('Video_Conference'),
 		text: t('Start_video_call'),
@@ -124,6 +146,51 @@ Template.videoFlexTab.onRendered(function() {
 					}, 300);
 					return newWindow.focus();
 				}
+			}
+
+			if (settings.get('Jitsi_Open_In_Popup')) {
+				start();
+				const newWindow = openVideoPopUp(`${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }`);
+				if (newWindow) {
+					const closeInterval = setInterval(() => {
+						if (newWindow.closed === false) {
+							return;
+						}
+						closePanel();
+						stop();
+						clearInterval(closeInterval);
+					}, 300);
+					return newWindow.focus();
+				}
+			}
+
+			if (settings.get('Jitsi_Open_In_Site_Mode')) {
+				window.addEventListener('message', (e) => {
+					if (settings.get('Iframe_Integration_receive_enable') !== true) {
+						return;
+					}
+
+					if (typeof e.data !== 'object' || typeof e.data.externalCommand !== 'string') {
+						return;
+					}
+
+					const origins = settings.get('Iframe_Integration_receive_origin');
+
+					if (origins !== '*' && origins.split(',').indexOf(e.origin) === -1) {
+						return console.error('Origin not allowed', e.origin);
+					}
+					if (e.data.externalCommand === 'stop-video-call') {
+						closePanel();
+						stop();
+						return;
+					}
+				});
+
+				start();
+				return fireGlobalEvent('jitsi-video-call', {
+					url: `${ (noSsl ? 'http://' : 'https://') + domain }/${ jitsiRoom }`,
+					roomId: rid,
+				});
 			}
 
 			if (typeof JitsiMeetExternalAPI !== 'undefined') {

@@ -8,7 +8,7 @@ import { TAPi18n } from 'meteor/tap:i18n';
 import { timeAgo, formatDateAndTime } from '../../lib/client/lib/formatDate';
 import { DateFormat } from '../../lib/client';
 import { renderMessageBody, MessageTypes, MessageAction, call, normalizeThreadMessage } from '../../ui-utils/client';
-import { RoomRoles, UserRoles, Roles, Messages } from '../../models/client';
+import { RoomRoles, UserRoles, Roles, Messages, Users } from '../../models/client';
 import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes, getURL } from '../../utils';
@@ -149,7 +149,8 @@ Template.message.helpers({
 			'u._id': msg.u._id,
 			rid: msg.rid,
 		});
-		const roles = [...(userRoles && userRoles.roles) || [], ...(roomRoles && roomRoles.roles) || []];
+		let roles = [...(userRoles && userRoles.roles) || [], ...(roomRoles && roomRoles.roles) || []];
+		roles = roles.filter((role) => role !== 'company-account');
 		return Roles.find({
 			_id: {
 				$in: roles,
@@ -423,6 +424,21 @@ Template.message.helpers({
 	parentMessage() {
 		const { msg: { threadMsg } } = this;
 		return threadMsg;
+	},
+	getCompanyName() {
+		const { msg } = this;
+		const user = Users.findOne({
+			_id: msg.u._id,
+			company: {
+				$exists: 1,
+			},
+		});
+		return user && user.company && user.company.name ? user.company.name : false;
+	},
+	hideSystemMessage() {
+		const { msg } = this;
+		const messageType = MessageTypes.getType(msg) || {};
+		return messageType.system && messageType.id !== 'jitsi_call_started';
 	},
 });
 
